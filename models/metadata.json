@@ -1,0 +1,455 @@
+{
+  "model_version": "20261022T124934Z",
+  "trained_at": "2026-10-22T12:49:34.611942+00:00",
+  "model_type": "logistic_regression",
+  "selection_metric": "validation_roc_auc",
+  "validation_roc_auc": 0.8660104885168824,
+  "decision_threshold": 0.5,
+  "risk_bands": {
+    "low_upper_bound": 0.3,
+    "medium_upper_bound": 0.6
+  },
+  "random_seed": 42,
+  "split_rows": {
+    "train": 4225,
+    "validation": 1409,
+    "test": 1409
+  },
+  "target_distribution": {
+    "0": 5174,
+    "1": 1869
+  },
+  "data": {
+    "target_column": "Churn Label",
+    "total_charges_column": "Total Charges",
+    "total_charges_missing_after_conversion": 11,
+    "total_charges_invalid_values": 0,
+    "excluded_columns": {
+      "CustomerID": "unique customer identifier",
+      "Churn Value": "duplicate encoding of the target",
+      "Churn Score": "outcome-related score with leakage risk",
+      "Churn Reason": "post-outcome explanation",
+      "CLTV": "potential outcome-derived feature excluded pending provenance review",
+      "Country": "geographic attribute excluded for privacy and generalization",
+      "State": "geographic attribute excluded for privacy and generalization",
+      "City": "geographic attribute excluded for privacy and generalization",
+      "Zip Code": "geographic attribute excluded for privacy and generalization",
+      "Lat Long": "precise location excluded for privacy",
+      "Latitude": "precise location excluded for privacy",
+      "Longitude": "precise location excluded for privacy",
+      "Count": "dataset row-count field, not a customer attribute"
+    },
+    "source_rows": 7043,
+    "duplicate_rows_reported": 0,
+    "source_file": "Copy of Telco_customer_churn.csv"
+  },
+  "preprocessing": {
+    "numeric_features": [
+      "Tenure Months",
+      "Monthly Charges",
+      "Total Charges"
+    ],
+    "categorical_features": [
+      "Gender",
+      "Senior Citizen",
+      "Partner",
+      "Dependents",
+      "Phone Service",
+      "Multiple Lines",
+      "Internet Service",
+      "Online Security",
+      "Online Backup",
+      "Device Protection",
+      "Tech Support",
+      "Streaming TV",
+      "Streaming Movies",
+      "Contract",
+      "Paperless Billing",
+      "Payment Method"
+    ],
+    "numeric_transform": "median imputation followed by standard scaling",
+    "categorical_transform": "most-frequent imputation followed by one-hot encoding; unknown categories ignored",
+    "fit_split": "training only"
+  },
+  "library_versions": {
+    "numpy": "2.4.5",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "shap": "0.54.1"
+  },
+  "training_medians": {
+    "monthly_charges": 70.55
+  },
+  "feature_schema": {
+    "Gender": {
+      "type": "string",
+      "categories": [
+        "Female",
+        "Male"
+      ]
+    },
+    "Senior Citizen": {
+      "type": "string",
+      "categories": [
+        "No",
+        "Yes"
+      ]
+    },
+    "Partner": {
+      "type": "string",
+      "categories": [
+        "No",
+        "Yes"
+      ]
+    },
+    "Dependents": {
+      "type": "string",
+      "categories": [
+        "No",
+        "Yes"
+      ]
+    },
+    "Tenure Months": {
+      "type": "number",
+      "categories": []
+    },
+    "Phone Service": {
+      "type": "string",
+      "categories": [
+        "No",
+        "Yes"
+      ]
+    },
+    "Multiple Lines": {
+      "type": "string",
+      "categories": [
+        "No",
+        "No phone service",
+        "Yes"
+      ]
+    },
+    "Internet Service": {
+      "type": "string",
+      "categories": [
+        "DSL",
+        "Fiber optic",
+        "No"
+      ]
+    },
+    "Online Security": {
+      "type": "string",
+      "categories": [
+        "No",
+        "No internet service",
+        "Yes"
+      ]
+    },
+    "Online Backup": {
+      "type": "string",
+      "categories": [
+        "No",
+        "No internet service",
+        "Yes"
+      ]
+    },
+    "Device Protection": {
+      "type": "string",
+      "categories": [
+        "No",
+        "No internet service",
+        "Yes"
+      ]
+    },
+    "Tech Support": {
+      "type": "string",
+      "categories": [
+        "No",
+        "No internet service",
+        "Yes"
+      ]
+    },
+    "Streaming TV": {
+      "type": "string",
+      "categories": [
+        "No",
+        "No internet service",
+        "Yes"
+      ]
+    },
+    "Streaming Movies": {
+      "type": "string",
+      "categories": [
+        "No",
+        "No internet service",
+        "Yes"
+      ]
+    },
+    "Contract": {
+      "type": "string",
+      "categories": [
+        "Month-to-month",
+        "One year",
+        "Two year"
+      ]
+    },
+    "Paperless Billing": {
+      "type": "string",
+      "categories": [
+        "No",
+        "Yes"
+      ]
+    },
+    "Payment Method": {
+      "type": "string",
+      "categories": [
+        "Bank transfer (automatic)",
+        "Credit card (automatic)",
+        "Electronic check",
+        "Mailed check"
+      ]
+    },
+    "Monthly Charges": {
+      "type": "number",
+      "categories": []
+    },
+    "Total Charges": {
+      "type": "number",
+      "categories": []
+    }
+  },
+  "feature_names": [
+    "numeric__Tenure Months",
+    "numeric__Monthly Charges",
+    "numeric__Total Charges",
+    "categorical__Gender_Female",
+    "categorical__Gender_Male",
+    "categorical__Senior Citizen_No",
+    "categorical__Senior Citizen_Yes",
+    "categorical__Partner_No",
+    "categorical__Partner_Yes",
+    "categorical__Dependents_No",
+    "categorical__Dependents_Yes",
+    "categorical__Phone Service_No",
+    "categorical__Phone Service_Yes",
+    "categorical__Multiple Lines_No",
+    "categorical__Multiple Lines_No phone service",
+    "categorical__Multiple Lines_Yes",
+    "categorical__Internet Service_DSL",
+    "categorical__Internet Service_Fiber optic",
+    "categorical__Internet Service_No",
+    "categorical__Online Security_No",
+    "categorical__Online Security_No internet service",
+    "categorical__Online Security_Yes",
+    "categorical__Online Backup_No",
+    "categorical__Online Backup_No internet service",
+    "categorical__Online Backup_Yes",
+    "categorical__Device Protection_No",
+    "categorical__Device Protection_No internet service",
+    "categorical__Device Protection_Yes",
+    "categorical__Tech Support_No",
+    "categorical__Tech Support_No internet service",
+    "categorical__Tech Support_Yes",
+    "categorical__Streaming TV_No",
+    "categorical__Streaming TV_No internet service",
+    "categorical__Streaming TV_Yes",
+    "categorical__Streaming Movies_No",
+    "categorical__Streaming Movies_No internet service",
+    "categorical__Streaming Movies_Yes",
+    "categorical__Contract_Month-to-month",
+    "categorical__Contract_One year",
+    "categorical__Contract_Two year",
+    "categorical__Paperless Billing_No",
+    "categorical__Paperless Billing_Yes",
+    "categorical__Payment Method_Bank transfer (automatic)",
+    "categorical__Payment Method_Credit card (automatic)",
+    "categorical__Payment Method_Electronic check",
+    "categorical__Payment Method_Mailed check"
+  ],
+  "global_feature_importance": [
+    {
+      "feature": "numeric__Tenure Months",
+      "importance": 1.2487826586401956
+    },
+    {
+      "feature": "categorical__Dependents_Yes",
+      "importance": 0.9067271483857099
+    },
+    {
+      "feature": "categorical__Contract_Two year",
+      "importance": 0.7446657956606885
+    },
+    {
+      "feature": "categorical__Dependents_No",
+      "importance": 0.7058541432375081
+    },
+    {
+      "feature": "categorical__Contract_Month-to-month",
+      "importance": 0.6654621043671878
+    },
+    {
+      "feature": "numeric__Total Charges",
+      "importance": 0.6004721922795098
+    },
+    {
+      "feature": "categorical__Internet Service_DSL",
+      "importance": 0.2903773694867711
+    },
+    {
+      "feature": "categorical__Paperless Billing_No",
+      "importance": 0.2709038922775394
+    },
+    {
+      "feature": "categorical__Payment Method_Electronic check",
+      "importance": 0.2689678789314323
+    },
+    {
+      "feature": "categorical__Phone Service_Yes",
+      "importance": 0.2606570006025107
+    },
+    {
+      "feature": "categorical__Tech Support_Yes",
+      "importance": 0.25476600857089826
+    },
+    {
+      "feature": "categorical__Online Security_Yes",
+      "importance": 0.2528110764018196
+    },
+    {
+      "feature": "categorical__Partner_No",
+      "importance": 0.22330153715265091
+    },
+    {
+      "feature": "categorical__Multiple Lines_No",
+      "importance": 0.21883560339551067
+    },
+    {
+      "feature": "categorical__Internet Service_Fiber optic",
+      "importance": 0.2039025019711507
+    },
+    {
+      "feature": "categorical__Payment Method_Bank transfer (automatic)",
+      "importance": 0.17586964361291277
+    },
+    {
+      "feature": "categorical__Tech Support_No",
+      "importance": 0.1682911410552793
+    },
+    {
+      "feature": "categorical__Online Security_No",
+      "importance": 0.16633620888620018
+    },
+    {
+      "feature": "categorical__Payment Method_Credit card (automatic)",
+      "importance": 0.1554439759734336
+    },
+    {
+      "feature": "categorical__Payment Method_Mailed check",
+      "importance": 0.13852726449328817
+    },
+    {
+      "feature": "categorical__Gender_Female",
+      "importance": 0.1374808555437279
+    },
+    {
+      "feature": "numeric__Monthly Charges",
+      "importance": 0.13671517024132124
+    },
+    {
+      "feature": "categorical__Streaming Movies_No",
+      "importance": 0.13301710240924686
+    },
+    {
+      "feature": "categorical__Online Backup_Yes",
+      "importance": 0.12974301488611983
+    },
+    {
+      "feature": "categorical__Contract_One year",
+      "importance": 0.12166931385470216
+    },
+    {
+      "feature": "categorical__Internet Service_No",
+      "importance": 0.11439813763258283
+    },
+    {
+      "feature": "categorical__Online Security_No internet service",
+      "importance": 0.11439813763258283
+    },
+    {
+      "feature": "categorical__Online Backup_No internet service",
+      "importance": 0.11439813763258283
+    },
+    {
+      "feature": "categorical__Device Protection_No internet service",
+      "importance": 0.11439813763258283
+    },
+    {
+      "feature": "categorical__Tech Support_No internet service",
+      "importance": 0.11439813763258283
+    },
+    {
+      "feature": "categorical__Streaming TV_No internet service",
+      "importance": 0.11439813763258283
+    },
+    {
+      "feature": "categorical__Streaming Movies_No internet service",
+      "importance": 0.11439813763258283
+    },
+    {
+      "feature": "categorical__Senior Citizen_No",
+      "importance": 0.10270243381618795
+    },
+    {
+      "feature": "categorical__Senior Citizen_Yes",
+      "importance": 0.09817057133201552
+    },
+    {
+      "feature": "categorical__Streaming TV_No",
+      "importance": 0.08469201286327072
+    },
+    {
+      "feature": "categorical__Paperless Billing_Yes",
+      "importance": 0.07003088712933969
+    },
+    {
+      "feature": "categorical__Device Protection_Yes",
+      "importance": 0.06405949433608009
+    },
+    {
+      "feature": "categorical__Gender_Male",
+      "importance": 0.06339214960447737
+    },
+    {
+      "feature": "categorical__Phone Service_No",
+      "importance": 0.059783995454305947
+    },
+    {
+      "feature": "categorical__Multiple Lines_No phone service",
+      "importance": 0.059783995454305947
+    },
+    {
+      "feature": "categorical__Streaming Movies_Yes",
+      "importance": 0.04654223489362739
+    },
+    {
+      "feature": "categorical__Online Backup_No",
+      "importance": 0.04326814737050025
+    },
+    {
+      "feature": "categorical__Multiple Lines_Yes",
+      "importance": 0.041821397206998415
+    },
+    {
+      "feature": "categorical__Partner_Yes",
+      "importance": 0.02242853200444731
+    },
+    {
+      "feature": "categorical__Device Protection_No",
+      "importance": 0.022415373179538997
+    },
+    {
+      "feature": "categorical__Streaming TV_Yes",
+      "importance": 0.0017828546523503154
+    }
+  ]
+}

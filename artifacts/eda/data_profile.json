@@ -1,0 +1,338 @@
+{
+  "source_file": "Copy of Telco_customer_churn.csv",
+  "shape": {
+    "rows": 7043,
+    "columns": 33
+  },
+  "columns": [
+    "CustomerID",
+    "Count",
+    "Country",
+    "State",
+    "City",
+    "Zip Code",
+    "Lat Long",
+    "Latitude",
+    "Longitude",
+    "Gender",
+    "Senior Citizen",
+    "Partner",
+    "Dependents",
+    "Tenure Months",
+    "Phone Service",
+    "Multiple Lines",
+    "Internet Service",
+    "Online Security",
+    "Online Backup",
+    "Device Protection",
+    "Tech Support",
+    "Streaming TV",
+    "Streaming Movies",
+    "Contract",
+    "Paperless Billing",
+    "Payment Method",
+    "Monthly Charges",
+    "Total Charges",
+    "Churn Label",
+    "Churn Value",
+    "Churn Score",
+    "CLTV",
+    "Churn Reason"
+  ],
+  "dtypes": {
+    "CustomerID": "str",
+    "Count": "int64",
+    "Country": "str",
+    "State": "str",
+    "City": "str",
+    "Zip Code": "int64",
+    "Lat Long": "str",
+    "Latitude": "float64",
+    "Longitude": "float64",
+    "Gender": "str",
+    "Senior Citizen": "str",
+    "Partner": "str",
+    "Dependents": "str",
+    "Tenure Months": "int64",
+    "Phone Service": "str",
+    "Multiple Lines": "str",
+    "Internet Service": "str",
+    "Online Security": "str",
+    "Online Backup": "str",
+    "Device Protection": "str",
+    "Tech Support": "str",
+    "Streaming TV": "str",
+    "Streaming Movies": "str",
+    "Contract": "str",
+    "Paperless Billing": "str",
+    "Payment Method": "str",
+    "Monthly Charges": "float64",
+    "Total Charges": "Float64",
+    "Churn Label": "str",
+    "Churn Value": "int64",
+    "Churn Score": "int64",
+    "CLTV": "int64",
+    "Churn Reason": "str"
+  },
+  "missing_values": {
+    "Total Charges": 11,
+    "Churn Reason": 5174
+  },
+  "duplicate_rows": 0,
+  "target_column": "Churn Label",
+  "target_counts": {
+    "No": 5174,
+    "Yes": 1869
+  },
+  "target_percentages": {
+    "No": 73.463,
+    "Yes": 26.537
+  },
+  "categorical_cardinalities": {
+    "CustomerID": 7043,
+    "Country": 1,
+    "State": 1,
+    "City": 1129,
+    "Lat Long": 1652,
+    "Gender": 2,
+    "Senior Citizen": 2,
+    "Partner": 2,
+    "Dependents": 2,
+    "Phone Service": 2,
+    "Multiple Lines": 3,
+    "Internet Service": 3,
+    "Online Security": 3,
+    "Online Backup": 3,
+    "Device Protection": 3,
+    "Tech Support": 3,
+    "Streaming TV": 3,
+    "Streaming Movies": 3,
+    "Contract": 3,
+    "Paperless Billing": 2,
+    "Payment Method": 4,
+    "Churn Label": 2,
+    "Churn Reason": 20
+  },
+  "categorical_values": {
+    "Country": [
+      "United States"
+    ],
+    "State": [
+      "California"
+    ],
+    "Gender": [
+      "Female",
+      "Male"
+    ],
+    "Senior Citizen": [
+      "No",
+      "Yes"
+    ],
+    "Partner": [
+      "No",
+      "Yes"
+    ],
+    "Dependents": [
+      "No",
+      "Yes"
+    ],
+    "Phone Service": [
+      "No",
+      "Yes"
+    ],
+    "Multiple Lines": [
+      "No",
+      "No phone service",
+      "Yes"
+    ],
+    "Internet Service": [
+      "DSL",
+      "Fiber optic",
+      "No"
+    ],
+    "Online Security": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "Online Backup": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "Device Protection": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "Tech Support": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "Streaming TV": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "Streaming Movies": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "Contract": [
+      "Month-to-month",
+      "One year",
+      "Two year"
+    ],
+    "Paperless Billing": [
+      "No",
+      "Yes"
+    ],
+    "Payment Method": [
+      "Bank transfer (automatic)",
+      "Credit card (automatic)",
+      "Electronic check",
+      "Mailed check"
+    ],
+    "Churn Label": [
+      "No",
+      "Yes"
+    ],
+    "Churn Reason": [
+      "Attitude of service provider",
+      "Attitude of support person",
+      "Competitor had better devices",
+      "Competitor made better offer",
+      "Competitor offered higher download speeds",
+      "Competitor offered more data",
+      "Deceased",
+      "Don't know",
+      "Extra data charges",
+      "Lack of affordable download/upload speed",
+      "Lack of self-service on Website",
+      "Limited range of services",
+      "Long distance charges",
+      "Moved",
+      "Network reliability",
+      "Poor expertise of online support",
+      "Poor expertise of phone support",
+      "Price too high",
+      "Product dissatisfaction",
+      "Service dissatisfaction"
+    ]
+  },
+  "categorical_values_omitted_above_50_categories": [
+    "City",
+    "CustomerID",
+    "Lat Long"
+  ],
+  "descriptive_observations": [
+    "No: 5174 of 7043 rows (73.46%).",
+    "Yes: 1869 of 7043 rows (26.54%).",
+    "Month-to-month contracts: 1655 of 3875 rows (42.71%) have a positive churn label.",
+    "One year contracts: 166 of 1473 rows (11.27%) have a positive churn label.",
+    "Two year contracts: 48 of 1695 rows (2.83%) have a positive churn label.",
+    "Median tenure for No: 38.00 months.",
+    "Median tenure for Yes: 10.00 months.",
+    "Median monthly charges for No: 64.43.",
+    "Median monthly charges for Yes: 79.65."
+  ],
+  "segment_churn": {
+    "Contract": [
+      {
+        "segment": "Month-to-month",
+        "customers": 3875,
+        "positive_label_count": 1655,
+        "positive_label_percentage": 42.71,
+        "label_counts": {
+          "No": 2220,
+          "Yes": 1655
+        }
+      },
+      {
+        "segment": "One year",
+        "customers": 1473,
+        "positive_label_count": 166,
+        "positive_label_percentage": 11.27,
+        "label_counts": {
+          "No": 1307,
+          "Yes": 166
+        }
+      },
+      {
+        "segment": "Two year",
+        "customers": 1695,
+        "positive_label_count": 48,
+        "positive_label_percentage": 2.83,
+        "label_counts": {
+          "No": 1647,
+          "Yes": 48
+        }
+      }
+    ],
+    "Payment Method": [
+      {
+        "segment": "Bank transfer (automatic)",
+        "customers": 1544,
+        "positive_label_count": 258,
+        "positive_label_percentage": 16.71,
+        "label_counts": {
+          "No": 1286,
+          "Yes": 258
+        }
+      },
+      {
+        "segment": "Credit card (automatic)",
+        "customers": 1522,
+        "positive_label_count": 232,
+        "positive_label_percentage": 15.24,
+        "label_counts": {
+          "No": 1290,
+          "Yes": 232
+        }
+      },
+      {
+        "segment": "Electronic check",
+        "customers": 2365,
+        "positive_label_count": 1071,
+        "positive_label_percentage": 45.29,
+        "label_counts": {
+          "No": 1294,
+          "Yes": 1071
+        }
+      },
+      {
+        "segment": "Mailed check",
+        "customers": 1612,
+        "positive_label_count": 308,
+        "positive_label_percentage": 19.11,
+        "label_counts": {
+          "No": 1304,
+          "Yes": 308
+        }
+      }
+    ]
+  },
+  "schema": {
+    "target_column_used_for_eda": "Churn Label",
+    "expected_target_column": "Churn",
+    "training_target_mapping": "Churn Label -> churn",
+    "schema_compatible_for_training": true,
+    "schema_issues": [
+      "Expected target column 'Churn'; found 'Churn Label' instead. The application uses the explicitly approved mapping for this dataset variant.",
+      "Expected 'TotalCharges'; found 'Total Charges'. Its whitespace/invalid-value conversion is included in this data audit.",
+      "'Churn Value' duplicates the churn label and must not be used as a predictor.",
+      "Converted 'Total Charges' to numeric; 11 values are missing after conversion (0 were already missing)."
+    ]
+  },
+  "charts": [
+    "churn_distribution.png",
+    "churn_by_contract.png",
+    "tenure_by_churn.png",
+    "monthly_charges_by_churn.png",
+    "churn_by_payment_method.png",
+    "numeric_feature_correlations.png"
+  ],
+  "report_file": "artifacts\\eda\\data_profile.json"
+}
