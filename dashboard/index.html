@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChurnGuard — Churn Risk Intelligence</title>
+  <meta name="description"
+    content="ChurnGuard: AI-powered customer churn prediction and retention intelligence dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-deep: #050b18;
+      --bg-mid: #0a1628;
+      --bg-card: rgba(14, 25, 50, 0.7);
+      --bg-glass: rgba(255, 255, 255, 0.04);
+      --border-glass: rgba(100, 200, 255, 0.12);
+      --border-glow: rgba(0, 220, 255, 0.35);
+      --cyan: #00dcff;
+      --cyan-dim: rgba(0, 220, 255, 0.15);
+      --cyan-glow: 0 0 24px rgba(0, 220, 255, 0.35);
+      --purple: #7c6aff;
+      --purple-dim: rgba(124, 106, 255, 0.15);
+      --green: #00f5a0;
+      --green-dim: rgba(0, 245, 160, 0.12);
+      --red: #ff4d6d;
+      --red-dim: rgba(255, 77, 109, 0.15);
+      --amber: #ffd166;
+      --text-primary: #e8f4ff;
+      --text-secondary: rgba(180, 210, 255, 0.65);
+      --text-muted: rgba(140, 170, 210, 0.4);
+      --nav-w: 240px;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 180, 255, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(124, 106, 255, 0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--nav-w);
+      background: rgba(8, 16, 35, 0.9);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-glass);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .logo {
+      padding: 0 20px 28px;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: var(--cyan-glow);
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .nav {
+      flex: 1;
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-section {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 12px 8px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border: 1px solid transparent;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-glass);
+      color: var(--text-primary);
+      border-color: var(--border-glass);
+    }
+
+    .nav-item.active {
+      background: var(--cyan-dim);
+      color: var(--cyan);
+      border-color: rgba(0, 220, 255, 0.2);
+    }
+
+    .nav-item .icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid var(--border-glass);
+    }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+
+    .status-dot.online {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .status-dot.offline {
+      background: var(--red);
+      box-shadow: 0 0 8px var(--red);
+    }
+
+    /* ── Main ── */
+    .main {
+      margin-left: var(--nav-w);
+      flex: 1;
+      padding: 36px 40px;
+      max-width: 100%;
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, var(--text-primary), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(100, 200, 255, 0.22);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* ── Metric cards ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+    }
+
+    .metric-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .metric-value.cyan {
+      color: var(--cyan);
+    }
+
+    .metric-value.purple {
+      color: var(--purple);
+    }
+
+    .metric-value.green {
+      color: var(--green);
+    }
+
+    .metric-value.red {
+      color: var(--red);
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ── Grids ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1100px) {
+      .grid-3 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 800px) {
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .chart-wrap canvas {
+      max-height: 280px;
+    }
+
+    /* ── Forms ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .form-input,
+    .form-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0, 220, 255, 0.12);
+    }
+
+    .form-select option {
+      background: var(--bg-mid);
+      color: var(--text-primary);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(0, 220, 255, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(0, 220, 255, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--cyan);
+      border: 1px solid rgba(0, 220, 255, 0.35);
+    }
+
+    .btn-outline:hover {
+      background: var(--cyan-dim);
+    }
+
+    /* ── Risk badges ── */
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .risk-badge.low {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(0, 245, 160, 0.2);
+    }
+
+    .risk-badge.medium {
+      background: rgba(255, 209, 102, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(255, 209, 102, 0.2);
+    }
+
+    .risk-badge.high {
+      background: var(--red-dim);
+      color: var(--red);
+      border: 1px solid rgba(255, 77, 109, 0.2);
+    }
+
+    .risk-badge.critical {
+      background: rgba(255, 77, 109, 0.25);
+      color: #ff3355;
+      border: 1px solid rgba(255, 51, 85, 0.4);
+    }
+
+    /* ── Progress bar ── */
+    .prob-bar-wrap {
+      margin: 16px 0;
+    }
+
+    .prob-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .prob-bar-track {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 1s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: rgba(0, 220, 255, 0.06);
+    }
+
+    th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-glass);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(0, 220, 255, 0.03);
+      color: var(--text-primary);
+    }
+
+    /* ── Alerts ── */
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .alert-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .alert.error {
+      background: var(--red-dim);
+      border: 1px solid rgba(255, 77, 109, 0.2);
+      color: #ffb0be;
+    }
+
+    .alert.success {
+      background: var(--green-dim);
+      border: 1px solid rgba(0, 245, 160, 0.2);
+      color: #7fffd4;
+    }
+
+    .alert.info {
+      background: var(--cyan-dim);
+      border: 1px solid rgba(0, 220, 255, 0.2);
+      color: var(--cyan);
+    }
+
+    .alert.warn {
+      background: rgba(255, 209, 102, 0.1);
+      border: 1px solid rgba(255, 209, 102, 0.2);
+      color: var(--amber);
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(0, 220, 255, 0.2);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-state {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      padding: 24px;
+      justify-content: center;
+    }
+
+    .shap-row-positive td:last-child {
+      color: var(--red);
+    }
+
+    .shap-row-negative td:last-child {
+      color: var(--green);
+    }
+
+    .suggestions {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .suggestions li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .suggestions li::before {
+      content: '\2192';
+      color: var(--cyan);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── File upload ── */
+    .upload-zone {
+      border: 2px dashed var(--border-glass);
+      border-radius: var(--radius);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--cyan);
+      background: var(--cyan-dim);
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .upload-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .upload-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    #batchFileInput {
+      display: none;
+    }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      justify-content: flex-end;
+    }
+
+    .page-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-glass);
+      background: var(--bg-glass);
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── Mobile ── */
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 200;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 20px 16px;
+        padding-top: 64px;
+      }
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 90;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-key {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .info-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 220, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 220, 255, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation">&#9776;</button>
+  <div class="overlay" id="overlay"></div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="logo-mark">
+          <div class="logo-icon">&#128737;</div>
+          <div>
+            <div class="logo-text">ChurnGuard</div>
+            <div class="logo-sub">Churn Intelligence</div>
+          </div>
+        </div>
+      </div>
+      <nav class="nav">
+        <div class="nav-section">Analytics</div>
+        <div class="nav-item active" data-page="overview" id="nav-overview"><span class="icon">&#128202;</span> Overview
+        </div>
+        <div class="nav-item" data-page="performance" id="nav-performance"><span class="icon">&#127919;</span> Model
+          Performance</div>
+        <div class="nav-item" data-page="insights" id="nav-insights"><span class="icon">&#128269;</span> Churn Insights
+        </div>
+        <div class="nav-section">Predictions</div>
+        <div class="nav-item" data-page="single" id="nav-single"><span class="icon">&#128100;</span> Single Customer
+        </div>
+        <div class="nav-item" data-page="batch" id="nav-batch"><span class="icon">&#128203;</span> Batch Predict</div>
+        <div class="nav-item" data-page="history" id="nav-history"><span class="icon">&#128336;</span> History</div>
+        <div class="nav-section">Info</div>
+        <div class="nav-item" data-page="about" id="nav-about"><span class="icon">&#8505;</span> Model Card</div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="api-status">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Connecting&hellip;</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page active" id="page-overview">
+        <div class="page-header">
+          <h1 class="page-title">Overview</h1>
+          <p class="page-subtitle">Live snapshot of model health and prediction activity</p>
+        </div>
+        <div id="overview-content">
+          <div class="loading-state">
+            <div class="spinner"></div>&nbsp;Loading overview&hellip;
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-performance">
+        <div class="page-header">
+          <h1 class="page-title">Model Performance</h1>
+          <p class="page-subtitle">Held-out test metrics, confusion matrix, and model comparison</p>
+        </div>
+        <div id="performance-content">
+          <div class="loading-state">
+            <div class="spinner"></div>&nbsp;Loading metrics&hellip;
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-insights">
+        <div class="page-header">
+          <h1 class="page-title">Churn Insights</h1>
+          <p class="page-subtitle">Descriptive segment patterns from the training dataset</p>
+        </div>
+        <div id="insights-content">
+          <div class="loading-state">
+            <div class="spinner"></div>&nbsp;Loading insights&hellip;
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-single">
+        <div class="page-header">
+          <h1 class="page-title">Single Customer Prediction</h1>
+          <p class="page-subtitle">Enter customer attributes to estimate churn probability</p>
+        </div>
+        <div id="single-content">
+          <div class="loading-state">
+            <div class="spinner"></div>&nbsp;Loading feature schema&hellip;
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-batch">
+        <div class="page-header">
+          <h1 class="page-title">Batch Prediction</h1>
+          <p class="page-subtitle">Upload a CSV to score multiple customers at once</p>
+        </div>
+        <div id="batch-content">
+          <div class="card">
+            <div class="upload-zone" id="uploadZone">
+              <div class="upload-icon">&#128194;</div>
+              <div class="upload-text">Drop a CSV file here or click to browse</div>
+              <div class="upload-hint">Max 1,000 rows &middot; Must match the feature schema</div>
+              <input type="file" id="batchFileInput" accept=".csv" />
+            </div>
+          </div>
+          <div id="batch-result"></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-history">
+        <div class="page-header">
+          <h1 class="page-title">Prediction History</h1>
+          <p class="page-subtitle">All scored customers persisted in SQLite</p>
+        </div>
+        <div id="history-content">
+          <div class="loading-state">
+            <div class="spinner"></div>&nbsp;Loading history&hellip;
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-about">
+        <div class="page-header">
+          <h1 class="page-title">Model Card</h1>
+          <p class="page-subtitle">Model details, intended use, and governance notes</p>
+        </div>
+        <div id="about-content">
+          <div class="loading-state">
+            <div class="spinner"></div>&nbsp;Loading model info&hellip;
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API = 'http://127.0.0.1:8000';
+    let featureSchema = null;
+    let perfChart = null, confChart = null;
+    let overviewCharts = {};
+
+    async function apiFetch(path, opts) {
+      opts = opts || {};
+      const res = await fetch(API + path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts));
+      if (!res.ok) {
+        let body = { detail: res.statusText };
+        try { body = await res.json(); } catch (e) { }
+        throw new Error(body.detail || 'HTTP ' + res.status);
+      }
+      return res.json();
+    }
+
+    function alertBox(type, msg) {
+      var icons = { error: '&#9888;&#65039;', success: '&#9989;', info: '&#8505;&#65039;', warn: '&#9889;' };
+      return '<div class="alert ' + type + '"><span class="alert-icon">' + icons[type] + '</span><span>' + msg + '</span></div>';
+    }
+
+    function probBarColor(p) {
+      if (p < 0.33) return 'linear-gradient(90deg,#00f5a0,#00dcff)';
+      if (p < 0.66) return 'linear-gradient(90deg,#ffd166,#ff9b3c)';
+      return 'linear-gradient(90deg,#ff4d6d,#ff1f5a)';
+    }
+
+    function riskBadge(cat) {
+      var c = (cat || '').toLowerCase();
+      return '<span class="risk-badge ' + c + '">' + c.charAt(0).toUpperCase() + c.slice(1) + '</span>';
+    }
+
+    function destroyChart(c) { if (c) c.destroy(); return null; }
+
+    // ── Status ──
+    async function checkStatus() {
+      var dot = document.getElementById('statusDot');
+      var txt = document.getElementById('statusText');
+      try {
+        await apiFetch('/health');
+        dot.className = 'status-dot online';
+        txt.textContent = 'API Online';
+      } catch (e) {
+        dot.className = 'status-dot offline';
+        txt.textContent = 'API Offline';
+      }
+    }
+    checkStatus();
+    setInterval(checkStatus, 15000);
+
+    // ── Navigation ──
+    var pageLoaded = {};
+
+    function navigate(pageId) {
+      document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+      document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
+      var page = document.getElementById('page-' + pageId);
+      var nav = document.getElementById('nav-' + pageId);
+      if (page) page.classList.add('active');
+      if (nav) nav.classList.add('active');
+      closeSidebar();
+      if (!pageLoaded[pageId]) { loadPage(pageId); pageLoaded[pageId] = true; }
+    }
+
+    document.querySelectorAll('.nav-item').forEach(function (item) {
+      item.addEventListener('click', function () { navigate(item.dataset.page); });
+    });
+
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('overlay');
+    document.getElementById('hamburger').addEventListener('click', function () {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('show');
+    });
+    overlay.addEventListener('click', closeSidebar);
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+
+    function loadPage(id) {
+      var loaders = { overview: loadOverview, performance: loadPerformance, insights: loadInsights, single: loadSingle, history: loadHistory, about: loadAbout };
+      if (loaders[id]) loaders[id]();
+    }
+
+    loadPage('overview');
+    pageLoaded['overview'] = true;
+
+    // ══ OVERVIEW ══
+    async function loadOverview() {
+      var el = document.getElementById('overview-content');
+      try {
+        var results = await Promise.all([
+          apiFetch('/health').catch(function () { return null; }),
+          apiFetch('/analytics/summary').catch(function () { return null; }),
+          apiFetch('/metrics').catch(function () { return null; }),
+          apiFetch('/analytics/training').catch(function () { return null; })
+        ]);
+        var health = results[0], summary = results[1], metrics = results[2], training = results[3];
+        var test = (metrics && metrics.held_out_test) ? metrics.held_out_test : {};
+        var totalPred = (summary && summary.total_predictions != null) ? summary.total_predictions : '&mdash;';
+        var avgProb = (summary && summary.average_probability != null) ? (summary.average_probability * 100).toFixed(1) + '%' : '&mdash;';
+        var churnCount = (summary && summary.predicted_class_counts && summary.predicted_class_counts.Yes != null) ? summary.predicted_class_counts.Yes : '&mdash;';
+        var modelReady = (health && health.model_ready) ? 'Ready &#10003;' : 'Unavailable';
+        var modelColor = (health && health.model_ready) ? 'green' : 'red';
+        var histReady = (health && health.history_ready) ? 'available' : 'unavailable';
+
+        var metricKeys = ['roc_auc', 'pr_auc', 'precision', 'recall', 'f1'];
+        var metricCards = metricKeys.map(function (k) {
+          var label = k.replace('_', ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+          var val = (test[k] != null) ? test[k].toFixed(3) : '&mdash;';
+          return '<div class="metric-card"><div class="metric-label">' + label + '</div><div class="metric-value" style="font-size:22px">' + val + '</div></div>';
+        }).join('');
+
+        el.innerHTML =
+          '<div class="metrics-grid">' +
+          '<div class="metric-card"><div class="metric-label">Model Status</div><div class="metric-value ' + modelColor + '" style="font-size:18px">' + modelReady + '</div><div class="metric-sub">History: ' + histReady + '</div></div>' +
+          '<div class="metric-card"><div class="metric-label">Total Predictions</div><div class="metric-value cyan">' + totalPred + '</div><div class="metric-sub">Stored in history</div></div>' +
+          '<div class="metric-card"><div class="metric-label">Avg Churn Probability</div><div class="metric-value purple">' + avgProb + '</div><div class="metric-sub">Across all predictions</div></div>' +
+          '<div class="metric-card"><div class="metric-label">Predicted Churn</div><div class="metric-value red">' + churnCount + '</div><div class="metric-sub">Positive predictions</div></div>' +
+          '</div>' +
+          '<div style="margin-bottom:16px;font-size:13px;color:var(--text-muted)">Test metrics (held-out split)</div>' +
+          '<div class="metrics-grid" style="margin-bottom:32px">' + metricCards + '</div>' +
+          '<div class="grid-2">' +
+          (training && training.target_counts ? '<div class="card"><div class="card-title">Training Label Distribution</div><div class="chart-wrap"><canvas id="labelChart"></canvas></div></div>' : '') +
+          (summary && summary.risk_counts && Object.keys(summary.risk_counts).length ? '<div class="card"><div class="card-title">Predictions by Risk Category</div><div class="chart-wrap"><canvas id="riskChart"></canvas></div></div>' : '') +
+          '</div>';
+
+        if (training && training.target_counts) {
+          var ctx = document.getElementById('labelChart').getContext('2d');
+          overviewCharts.label = destroyChart(overviewCharts.label);
+          overviewCharts.label = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: Object.keys(training.target_counts), datasets: [{ data: Object.values(training.target_counts), backgroundColor: ['rgba(0,220,255,0.6)', 'rgba(255,77,109,0.6)'], borderColor: ['#00dcff', '#ff4d6d'], borderWidth: 2, borderRadius: 8 }] },
+            options: chartOpts('Customers')
+          });
+        }
+        if (summary && summary.risk_counts) {
+          var ctx2 = document.getElementById('riskChart').getContext('2d');
+          var rColors = { low: 'rgba(0,245,160,0.6)', medium: 'rgba(255,209,102,0.6)', high: 'rgba(255,100,50,0.6)', critical: 'rgba(255,77,109,0.6)' };
+          var rBorders = { low: '#00f5a0', medium: '#ffd166', high: '#ff6432', critical: '#ff4d6d' };
+          var rLabels = Object.keys(summary.risk_counts);
+          overviewCharts.risk = destroyChart(overviewCharts.risk);
+          overviewCharts.risk = new Chart(ctx2, {
+            type: 'doughnut',
+            data: { labels: rLabels, datasets: [{ data: Object.values(summary.risk_counts), backgroundColor: rLabels.map(function (l) { return rColors[l] || 'rgba(0,220,255,0.5)'; }), borderColor: rLabels.map(function (l) { return rBorders[l] || '#00dcff'; }), borderWidth: 2 }] },
+            options: Object.assign({}, doughnutOpts(), { plugins: { legend: { display: true, labels: { color: 'rgba(180,210,255,0.7)', font: { size: 12, family: 'Inter' }, boxWidth: 12 } } } })
+          });
+        }
+      } catch (e) {
+        el.innerHTML = alertBox('error', 'Failed to load overview: ' + e.message);
+      }
+    }
+
+    // ══ PERFORMANCE ══
+    async function loadPerformance() {
+      var el = document.getElementById('performance-content');
+      try {
+        var metrics = await apiFetch('/metrics');
+        var test = metrics.held_out_test;
+        var comp = metrics.validation_comparison;
+        var compRows = Object.entries(comp).map(function (entry) {
+          var name = entry[0], d = entry[1];
+          return '<tr><td>' + name + '</td>' + ['roc_auc', 'pr_auc', 'precision', 'recall', 'f1', 'accuracy'].map(function (m) { return '<td>' + (d[m] != null ? d[m].toFixed(4) : '&mdash;') + '</td>'; }).join('') + '</tr>';
+        }).join('');
+        var matrix = test.confusion_matrix || [[0, 0], [0, 0]];
+
+        el.innerHTML =
+          '<div class="card" style="margin-bottom:20px">' +
+          '<div class="card-title">Validation Model Comparison</div>' +
+          '<div class="table-wrap"><table><thead><tr><th>Model</th><th>ROC-AUC</th><th>PR-AUC</th><th>Precision</th><th>Recall</th><th>F1</th><th>Accuracy</th></tr></thead><tbody>' + compRows + '</tbody></table></div>' +
+          '<p style="font-size:11px;color:var(--text-muted);margin-top:12px">Selected by validation ROC-AUC. Test metrics are from a held-out split.</p>' +
+          '</div>' +
+          '<div class="grid-2">' +
+          '<div class="card"><div class="card-title">Held-out Test Metrics</div><div class="chart-wrap"><canvas id="testRadar"></canvas></div></div>' +
+          '<div class="card"><div class="card-title">Confusion Matrix</div><div class="chart-wrap"><canvas id="confMatrix"></canvas></div></div>' +
+          '</div>';
+
+        var radarKeys = ['roc_auc', 'pr_auc', 'precision', 'recall', 'f1'];
+        perfChart = destroyChart(perfChart);
+        perfChart = new Chart(document.getElementById('testRadar').getContext('2d'), {
+          type: 'radar',
+          data: {
+            labels: radarKeys.map(function (k) { return k.replace('_', ' ').toUpperCase(); }),
+            datasets: [{ label: 'Test Score', data: radarKeys.map(function (k) { return test[k] || 0; }), backgroundColor: 'rgba(0,220,255,0.12)', borderColor: '#00dcff', pointBackgroundColor: '#00dcff', pointRadius: 4, borderWidth: 2 }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: 'rgba(180,210,255,0.7)', font: { family: 'Inter' } } } },
+            scales: { r: { min: 0, max: 1, grid: { color: 'rgba(255,255,255,0.06)' }, angleLines: { color: 'rgba(255,255,255,0.06)' }, pointLabels: { color: 'rgba(180,210,255,0.7)', font: { size: 11, family: 'Inter' } }, ticks: { backdropColor: 'transparent', color: 'rgba(180,210,255,0.4)', font: { size: 10 } } } }
+          }
+        });
+
+        confChart = destroyChart(confChart);
+        confChart = new Chart(document.getElementById('confMatrix').getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: ['Actual No Churn', 'Actual Churn'],
+            datasets: [
+              { label: 'Predicted No Churn', data: [matrix[0][0], matrix[1][0]], backgroundColor: ['rgba(0,245,160,0.5)', 'rgba(255,77,109,0.5)'], borderColor: ['#00f5a0', '#ff4d6d'], borderWidth: 2, borderRadius: 6 },
+              { label: 'Predicted Churn', data: [matrix[0][1], matrix[1][1]], backgroundColor: ['rgba(255,77,109,0.5)', 'rgba(0,245,160,0.5)'], borderColor: ['#ff4d6d', '#00f5a0'], borderWidth: 2, borderRadius: 6 }
+            ]
+          },
+          options: Object.assign({}, chartOpts('Count'), { indexAxis: 'y' })
+        });
+      } catch (e) {
+        el.innerHTML = alertBox('error', 'Failed to load metrics: ' + e.message);
+      }
+    }
+
+    // ══ INSIGHTS ══
+    async function loadInsights() {
+      var el = document.getElementById('insights-content');
+      try {
+        var data = await apiFetch('/analytics/training');
+        var out = '<div class="alert info"><span class="alert-icon">&#8505;&#65039;</span><span>These are descriptive patterns in the training data, not causes or model explanations.</span></div>';
+        if (data.descriptive_observations && data.descriptive_observations.length) {
+          out += '<div class="card" style="margin-bottom:20px"><div class="card-title">Descriptive Observations</div><ul class="suggestions">' +
+            data.descriptive_observations.map(function (o) { return '<li>' + o + '</li>'; }).join('') + '</ul></div>';
+        }
+        for (var segName in (data.segment_churn || {})) {
+          var rows = data.segment_churn[segName];
+          if (!rows || !rows.length) continue;
+          var cols = Object.keys(rows[0]);
+          out += '<div class="card" style="margin-bottom:20px"><div class="card-title">' + segName.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); }) + '</div>' +
+            '<div class="table-wrap"><table><thead><tr>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr></thead><tbody>' +
+            rows.map(function (r) { return '<tr>' + cols.map(function (c) { return '<td>' + (r[c] != null ? r[c] : '&mdash;') + '</td>'; }).join('') + '</tr>'; }).join('') +
+            '</tbody></table></div></div>';
+        }
+        el.innerHTML = out;
+      } catch (e) {
+        el.innerHTML = alertBox('error', 'Failed to load insights: ' + e.message);
+      }
+    }
+
+    // ══ SINGLE PREDICTION ══
+    async function loadSingle() {
+      var el = document.getElementById('single-content');
+      try {
+        var resp = await apiFetch('/features');
+        featureSchema = resp.features;
+        var fields = featureSchema.map(function (spec) {
+          if (spec.categories && spec.categories.length) {
+            return '<div class="form-group"><label class="form-label" for="f_' + spec.name + '">' + spec.name + '</label>' +
+              '<select class="form-select" id="f_' + spec.name + '" name="' + spec.name + '">' +
+              spec.categories.map(function (c) { return '<option value="' + c + '">' + c + '</option>'; }).join('') +
+              '</select></div>';
+          } else {
+            return '<div class="form-group"><label class="form-label" for="f_' + spec.name + '">' + spec.name + '</label>' +
+              '<input class="form-input" type="number" id="f_' + spec.name + '" name="' + spec.name + '" value="0" step="any" /></div>';
+          }
+        }).join('');
+        el.innerHTML =
+          '<div class="card">' +
+          '<div class="form-group" style="max-width:320px;margin-bottom:20px">' +
+          '<label class="form-label" for="customerLabel">Customer Label (optional)</label>' +
+          '<input class="form-input" type="text" id="customerLabel" placeholder="e.g. CUST-0042" maxlength="128" />' +
+          '</div>' +
+          '<div class="form-grid">' + fields + '</div>' +
+          '<button class="btn btn-primary" id="predictBtn" onclick="runSinglePredict()">&#128640; Estimate Churn Risk</button>' +
+          '</div>' +
+          '<div id="predict-result" style="margin-top:20px"></div>';
+      } catch (e) {
+        el.innerHTML = alertBox('error', 'Failed to load feature schema: ' + e.message);
+      }
+    }
+
+    async function runSinglePredict() {
+      var btn = document.getElementById('predictBtn');
+      var resEl = document.getElementById('predict-result');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div>&nbsp;Predicting&hellip;';
+      resEl.innerHTML = '';
+      try {
+        var features = {};
+        featureSchema.forEach(function (spec) {
+          var el = document.getElementById('f_' + spec.name);
+          features[spec.name] = (spec.type === 'number') ? (parseFloat(el.value) || 0) : el.value;
+        });
+        var label = document.getElementById('customerLabel').value.trim() || null;
+        var result = await apiFetch('/predict', { method: 'POST', body: JSON.stringify({ features: features, customer_label: label }) });
+        renderPredictionResult(result, resEl);
+      } catch (e) {
+        resEl.innerHTML = alertBox('error', 'Prediction failed: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '&#128640; Estimate Churn Risk';
+      }
+    }
+
+    function renderPredictionResult(result, container) {
+      var p = result.probability;
+      var barColor = probBarColor(p);
+      var pct = (p * 100).toFixed(1);
+      var churnYes = result.predicted_class === 'Yes';
+      var shapHtml = '';
+      if (result.explanation && result.explanation.features && result.explanation.features.length) {
+        var shapRows = result.explanation.features.slice(0, 10).map(function (f) {
+          var pos = f.shap_value > 0;
+          var val = (typeof f.value === 'number') ? f.value.toFixed(4) : f.value;
+          return '<tr class="' + (pos ? 'shap-row-positive' : 'shap-row-negative') + '"><td>' + f.feature + '</td><td>' + val + '</td><td>' + f.shap_value.toFixed(4) + '</td></tr>';
+        }).join('');
+        shapHtml = '<div class="card" style="margin-top:20px"><div class="card-title">Model Contribution (SHAP)</div>' +
+          '<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">' + result.explanation.caveat + '</p>' +
+          '<div class="table-wrap"><table><thead><tr><th>Feature</th><th>Value</th><th>SHAP Value</th></tr></thead><tbody>' + shapRows + '</tbody></table></div></div>';
+      }
+      var suggestHtml = '';
+      if (result.retention_suggestions && result.retention_suggestions.length) {
+        suggestHtml = '<div class="card" style="margin-top:20px"><div class="card-title">Retention Review Prompts</div>' +
+          '<ul class="suggestions">' + result.retention_suggestions.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul></div>';
+      }
+      container.innerHTML =
+        '<div class="card">' +
+        '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px">' +
+        '<div><div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">Predicted Outcome</div>' +
+        '<div style="font-size:32px;font-weight:800;color:' + (churnYes ? 'var(--red)' : 'var(--green)') + '">' + (churnYes ? '&#9888; Likely to Churn' : '&#10003; Likely to Stay') + '</div></div>' +
+        '<div style="margin-left:auto">' + riskBadge(result.risk_category) + '</div>' +
+        '</div>' +
+        '<div class="prob-bar-wrap">' +
+        '<div class="prob-bar-label"><span>Churn Probability</span><span style="font-size:20px;font-weight:700;color:var(--text-primary)">' + pct + '%</span></div>' +
+        '<div class="prob-bar-track"><div class="prob-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>' +
+        '</div>' +
+        '<div class="grid-2" style="margin-top:16px">' +
+        '<div><div class="info-key">Decision Threshold</div><div class="info-val">' + result.threshold.toFixed(2) + '</div></div>' +
+        '<div><div class="info-key">Prediction ID</div><div class="info-val">' + (result.prediction_id != null ? result.prediction_id : '&mdash;') + '</div></div>' +
+        '</div>' +
+        (!result.history_saved ? '<div class="alert warn" style="margin-top:16px"><span class="alert-icon">&#9889;</span><span>' + (result.history_warning || 'Not saved to history.') + '</span></div>' : '') +
+        '</div>' + shapHtml + suggestHtml;
+    }
+
+    // ══ BATCH PREDICTION ══
+    var uploadZone = document.getElementById('uploadZone');
+    var batchFileInput = document.getElementById('batchFileInput');
+
+    uploadZone.addEventListener('click', function () { batchFileInput.click(); });
+    uploadZone.addEventListener('dragover', function (e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', function () { uploadZone.classList.remove('dragover'); });
+    uploadZone.addEventListener('drop', function (e) {
+      e.preventDefault(); uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) processBatchFile(e.dataTransfer.files[0]);
+    });
+    batchFileInput.addEventListener('change', function () {
+      if (batchFileInput.files[0]) processBatchFile(batchFileInput.files[0]);
+    });
+
+    async function processBatchFile(file) {
+      var resEl = document.getElementById('batch-result');
+      if (!file.name.endsWith('.csv')) { resEl.innerHTML = alertBox('error', 'Please upload a .csv file.'); return; }
+      resEl.innerHTML = '<div class="loading-state"><div class="spinner"></div>&nbsp;Parsing CSV and running predictions&hellip;</div>';
+      try {
+        if (!featureSchema) { var resp = await apiFetch('/features'); featureSchema = resp.features; }
+        var text = await file.text();
+        var rows = parseCSV(text);
+        if (!rows.length) { resEl.innerHTML = alertBox('error', 'CSV is empty.'); return; }
+        if (rows.length > 1000) { resEl.innerHTML = alertBox('error', 'CSV has ' + rows.length + ' rows; limit is 1,000.'); return; }
+        var featureNames = featureSchema.map(function (s) { return s.name; });
+        var missing = featureNames.filter(function (f) { return !(f in rows[0]); });
+        if (missing.length) { resEl.innerHTML = alertBox('error', 'Missing columns: ' + missing.join(', ')); return; }
+        var records = rows.map(function (row) {
+          var features = {};
+          featureSchema.forEach(function (spec) {
+            var val = row[spec.name];
+            features[spec.name] = (spec.type === 'number') ? (parseFloat(val) || 0) : (val || '');
+          });
+          return { features: features, customer_label: row.customer_label || null };
+        });
+        var result = await apiFetch('/predict/batch', { method: 'POST', body: JSON.stringify({ records: records }) });
+        renderBatchResult(rows, result, resEl);
+      } catch (e) {
+        resEl.innerHTML = alertBox('error', 'Batch prediction failed: ' + e.message);
+      }
+    }
+
+    function parseCSV(text) {
+      var lines = text.trim().split('\n');
+      if (lines.length < 2) return [];
+      var headers = lines[0].split(',').map(function (h) { return h.trim().replace(/^"|"$/g, ''); });
+      return lines.slice(1).filter(function (l) { return l.trim(); }).map(function (line) {
+        var vals = line.split(',').map(function (v) { return v.trim().replace(/^"|"$/g, ''); });
+        var obj = {};
+        headers.forEach(function (h, i) { obj[h] = vals[i] != null ? vals[i] : ''; });
+        return obj;
+      });
+    }
+
+    function renderBatchResult(rows, result, container) {
+      var results = result.results;
+      var tableRows = results.map(function (r, i) {
+        var p = (r.probability * 100).toFixed(1);
+        var churn = r.predicted_class === 'Yes';
+        return '<tr><td>' + (i + 1) + '</td><td>' + (rows[i] && rows[i].customer_label ? rows[i].customer_label : '&mdash;') + '</td><td>' + p + '%</td>' +
+          '<td>' + (churn ? '<span style="color:var(--red)">Yes</span>' : '<span style="color:var(--green)">No</span>') + '</td>' +
+          '<td>' + riskBadge(r.risk_category) + '</td></tr>';
+      }).join('');
+      var csvLines = ['customer_label,probability,predicted_class,risk_category'].concat(
+        results.map(function (r, i) { return (rows[i] && rows[i].customer_label ? rows[i].customer_label : '') + ',' + r.probability.toFixed(4) + ',' + r.predicted_class + ',' + r.risk_category; })
+      );
+      var downloadUrl = URL.createObjectURL(new Blob([csvLines.join('\n')], { type: 'text/csv' }));
+      container.innerHTML =
+        '<div class="card" style="margin-top:20px">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">' +
+        '<div class="card-title" style="margin:0">' + results.length + ' Predictions Complete</div>' +
+        '<a href="' + downloadUrl + '" download="churnguard_batch.csv" class="btn btn-outline" style="text-decoration:none">&#11015; Download CSV</a>' +
+        '</div>' +
+        '<div class="table-wrap"><table><thead><tr><th>#</th><th>Customer</th><th>Probability</th><th>Churn</th><th>Risk</th></tr></thead><tbody>' + tableRows + '</tbody></table></div>' +
+        '</div>';
+    }
+
+    // ══ HISTORY ══
+    var histPage = 1;
+    var HIST_LIMIT = 50;
+
+    function loadHistory() { fetchHistory(1); }
+
+    async function fetchHistory(page) {
+      var el = document.getElementById('history-content');
+      el.innerHTML = '<div class="loading-state"><div class="spinner"></div>&nbsp;Loading history&hellip;</div>';
+      histPage = page;
+      try {
+        var offset = (page - 1) * HIST_LIMIT;
+        var data = await apiFetch('/history?limit=' + HIST_LIMIT + '&offset=' + offset);
+        var total = data.total;
+        var totalPages = Math.ceil(total / HIST_LIMIT);
+        if (!data.items.length) { el.innerHTML = alertBox('info', 'No prediction history yet. Run some predictions first.'); return; }
+        var tableRows = data.items.map(function (item) {
+          var p = (item.probability * 100).toFixed(1);
+          var churn = item.predicted_class === 'Yes';
+          return '<tr><td>' + item.id + '</td><td>' + (item.customer_label || '&mdash;') + '</td>' +
+            '<td>' + new Date(item.timestamp).toLocaleString() + '</td>' +
+            '<td>' + p + '%</td>' +
+            '<td>' + (churn ? '<span style="color:var(--red)">Yes</span>' : '<span style="color:var(--green)">No</span>') + '</td>' +
+            '<td>' + riskBadge(item.risk_category) + '</td>' +
+            '<td style="font-family:\'JetBrains Mono\',monospace;font-size:11px">' + (item.model_version || '&mdash;') + '</td></tr>';
+        }).join('');
+        el.innerHTML =
+          '<div class="card">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">' +
+          '<div class="card-title" style="margin:0">' + total + ' total predictions</div>' +
+          '</div>' +
+          '<div class="table-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Time</th><th>Probability</th><th>Churn</th><th>Risk</th><th>Model Ver.</th></tr></thead><tbody>' + tableRows + '</tbody></table></div>' +
+          '<div class="pagination">' +
+          '<button class="page-btn" ' + (page <= 1 ? 'disabled' : 'onclick="fetchHistory(' + (page - 1) + ')"') + '>&#8592; Prev</button>' +
+          '<span class="page-info">Page ' + page + ' of ' + totalPages + '</span>' +
+          '<button class="page-btn" ' + (page >= totalPages ? 'disabled' : 'onclick="fetchHistory(' + (page + 1) + ')"') + '>Next &#8594;</button>' +
+          '</div>' +
+          '</div>';
+      } catch (e) {
+        el.innerHTML = alertBox('error', 'Failed to load history: ' + e.message);
+      }
+    }
+
+    // ══ ABOUT ══
+    async function loadAbout() {
+      var el = document.getElementById('about-content');
+      try {
+        var info = await apiFetch('/model/info');
+        var rows = [
+          ['Model Type', info.model_type],
+          ['Model Version', info.model_version],
+          ['Trained At', new Date(info.trained_at).toLocaleString()],
+          ['Selection Metric', info.selection_metric],
+          ['Validation ROC-AUC', info.validation_roc_auc != null ? info.validation_roc_auc.toFixed(4) : '&mdash;'],
+          ['Decision Threshold', info.decision_threshold != null ? info.decision_threshold.toFixed(2) : '&mdash;']
+        ];
+        el.innerHTML =
+          '<div class="grid-2">' +
+          '<div class="card"><div class="card-title">Model Details</div>' +
+          rows.map(function (r) { return '<div class="info-row"><span class="info-key">' + r[0] + '</span><span class="info-val">' + r[1] + '</span></div>'; }).join('') +
+          '</div>' +
+          '<div class="card"><div class="card-title">Governance Notes</div>' +
+          '<div class="alert warn" style="margin-bottom:12px"><span class="alert-icon">&#9889;</span><span><strong>Intended use:</strong> Educational decision-support with human review only.</span></div>' +
+          '<ul style="list-style:none;display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--text-secondary)">' +
+          '<li>&bull; Historical labels may not represent current customers</li>' +
+          '<li>&bull; Probabilities may not be calibrated</li>' +
+          '<li>&bull; False positives and false negatives both matter</li>' +
+          '<li>&bull; Explanations describe model contribution, not causation</li>' +
+          '<li>&bull; Retention suggestions are hypotheses to test, not guaranteed outcomes</li>' +
+          '</ul>' +
+          '</div>' +
+          '</div>' +
+          '<div class="card" style="margin-top:20px"><div class="card-title">Privacy Notice</div>' +
+          '<div class="alert error"><span class="alert-icon">&#9888;&#65039;</span><span>Prediction history stores supplied predictor attributes and is not access-controlled. Do not use real customer data until privacy, retention, encryption, access-control, and security reviews are complete.</span></div>' +
+          '</div>';
+      } catch (e) {
+        el.innerHTML = alertBox('error', 'Failed to load model info: ' + e.message);
+      }
+    }
+
+    // ── Chart helpers ──
+    function chartOpts(yLabel) {
+      return {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: 'rgba(8,16,35,0.95)', titleColor: '#e8f4ff', bodyColor: 'rgba(180,210,255,0.7)', borderColor: 'rgba(0,220,255,0.2)', borderWidth: 1 }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(180,210,255,0.6)', font: { family: 'Inter', size: 11 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(180,210,255,0.6)', font: { family: 'Inter', size: 11 } }, title: { display: true, text: yLabel || 'Count', color: 'rgba(140,170,210,0.5)', font: { size: 11 } } }
+        }
+      };
+    }
+
+    function doughnutOpts() {
+      return {
+        responsive: true, cutout: '65%',
+        plugins: {
+          tooltip: { backgroundColor: 'rgba(8,16,35,0.95)', titleColor: '#e8f4ff', bodyColor: 'rgba(180,210,255,0.7)', borderColor: 'rgba(0,220,255,0.2)', borderWidth: 1 }
+        }
+      };
+    }
+  </script>
+</body>
+
+</html>
